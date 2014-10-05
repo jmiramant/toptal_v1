@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title></title>
+	<link rel="stylesheet" href="">
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3.min.js"></script>
+	<style>
+
+	</style>
+</head>
+<body>
+  <header><h3>Most Common Personal Archetypes</h3></header>
+  <div id="donut-chart">
+    <div id="inner-chart">
+      <div id='inner-text'></div>
+    </div>
+  </div>	
+</body>
+<script>
+	setTimeout((function(_this) {
+	  return function() {
+	    _this.data = [
+	      {
+	        id: 'donut-chart',
+	        height: 300,
+	        width: 300,
+	        innerRadius: 90,
+	        outerRadius: 50,
+	        colors: function(i) {
+	          return ['#bb51e2', '#5dcbe2', '#81c850', '#e4e4e4'][i];
+	        },
+	        style: [['', ''], ['', '']]
+	      }, {
+	        id: 'inner-chart',
+	        height: 120,
+	        width: 120,
+	        innerRadius: 2,
+	        outerRadius: 8,
+	        targetIndex: 0,
+	        colors: function(i, isClick) {
+	          var c;
+	          if (isClick == null) {
+	            isClick = false;
+	          }
+	          c = ['#a342c7', '#58b4c7', '#72b147', '#99a3b1'];
+	          if (isClick) {
+	            _this.innerArcIndex = i;
+	          }
+	          if (i === _this.innerArcIndex) {
+	            return c[i];
+	          } else {
+	            return '#fff';
+	          }
+	        },
+	        style: [['position', 'absolute'], ['margin', '90px -60px']]
+	      }
+	    ];
+	    return _.each(_this.data, function(t, i) {
+	      var arc, path, pie, radius, svg, toggleHighlight;
+	      radius = Math.min(t.width, t.height) / 2;
+	      pie = d3.layout.pie().sort(null);
+	      arc = d3.svg.arc().innerRadius(radius - t.innerRadius).outerRadius(radius - t.outerRadius);
+	      svg = d3.select('#' + t.id).append('svg').attr('width', t.width).attr('height', t.height).style(t.style[0][0], t.style[0][1]).style(t.style[1][0], t.style[1][1]).append('g').attr('transform', 'translate(' + t.width / 2 + ',' + t.height / 2 + ')');
+	      toggleHighlight = ((function(_this) {
+	        return function() {
+	          var self;
+	          self = _this;
+	          return function() {
+	            var c, paths;
+	            i = parseInt(this.innerHTML);
+	            self._updateExternalDomEvents(i % 4);
+	            self._descriptionHandler(i % 4);
+	            paths = document.getElementsByTagName('path');
+	            c = 0;
+	            self.color = {
+	              outer: self.data[0].colors(i),
+	              inner: self.data[1].colors(i, true)
+	            };
+	            return 8..times(function() {
+	              var target;
+	              if (c < 4) {
+	                target = d3.select(paths[c]);
+	                target.style("fill", '#fff');
+	                if ((c % 4) === i) {
+	                  target.style("fill", self.color.inner);
+	                }
+	              }
+	              return ++c;
+	            });
+	          };
+	        };
+	      })(this))(this);
+	      path = svg.selectAll('path').data(pie(this.orderedArchs)).enter();
+	      return path.append('path').text(function(d, i) {
+	        return i;
+	      }).attr('fill', (function(_this) {
+	        return function(d, i) {
+	          return t.colors(i);
+	        };
+	      })(this)).attr('d', arc).on("click", toggleHighlight);
+	    }, _this);
+	  };
+	})(this), 500);
+
+</script>
+</html>
